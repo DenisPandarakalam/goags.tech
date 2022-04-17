@@ -20,6 +20,7 @@ class SportEvent:
     
     def __init__(self, sport="", date="", time="", at="", opp="", loc="", result="") -> None:
 
+        self.id      = (sport + date + time).replace(' ', '').replace('.', '').replace('-','').replace('\'','').lower()
         self.sport   = sport
         self.date    = date
         self.time    = time
@@ -48,7 +49,6 @@ MSPORTS = [
 WSPORTS = [
     "wbball",
     "wbvball",
-    "cross",
     "equest",
     "fhockey",
     "wgolf",
@@ -59,7 +59,6 @@ WSPORTS = [
     "wswim",
     "wten",
     "itrack",
-    "track",
     "wvball",
     "wwpolo"
 ]
@@ -111,12 +110,28 @@ def formatDate(dateStr):
     return dateStr
 
 def formatTime(timeStr):
-    if timeStr == "TBA":
-        timeStr = ""
-    if timeStr == "Noon":
-        timeStr = "12:00"
+    
+    # timeStr = timeStr.lower()
 
-    # timeStr = timeStr[-4:]
+    # if timeStr == "tba" or timeStr == "tbd" or timeStr == "all day":
+    #     timeStr = ""
+    # if timeStr == "noon":
+    #     timeStr = "12:00"
+    
+    # if timeStr.endswith('t'):
+    #     timeStr = timeStr[0: timeStr.rfind('.')]
+    #     pass
+
+    # # print(timeStr)
+
+    # if timeStr.find('a') != -1:
+    #     timeStr = timeStr[0:-4].strip()
+    # if timeStr.find('p') != -1:
+    #     timeStr = timeStr[0:-4].strip()
+    #     hour = int(timeStr[0:1].replace(':',''))+12
+    #     timeStr = str(hour) + (timeStr[timeStr.find(':'):] if ':' in timeStr else ':00')
+
+    # # timeStr = timeStr[-4:]
     return timeStr
 
 raw = raw.split('\n')
@@ -169,8 +184,7 @@ for lineNumberTotal, line in enumerate(raw):
             loc         = line[indices[4]:indices[5]].rstrip()
             result      = line[indices[5]:].rstrip()
 
-            print(date)
-            # print(sport, datetime, at, opp, loc, result)
+            # print(time)
 
             event = SportEvent(sport, date, time, at, opp, loc, result)
             SportEvents.append(event)

@@ -2,6 +2,9 @@
 # Imports
 #----------------------------------------------------------------------------#
 
+from ast import Return
+import email
+from tabnanny import check
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 # from flask.ext.sqlalchemy import SQLAlchemy
@@ -12,6 +15,7 @@ import os
 
 import json
 from sportevents import SportEvents
+from db_functions import *
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -33,7 +37,7 @@ def shutdown_session(exception=None):
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
-        if 'loggedIn' in session:
+        if session['loggedIn']:
             return test(*args, **kwargs)
         else:
             flash('You need to login first.')
@@ -45,36 +49,75 @@ def login_required(test):
 
 
 session = {
-    "profile": {
-        "name": "Denis"
-    },
-    "loggedIn": "True",
+    "loggedIn": False,
     "events": SportEvents,
     "eventsJSON": json.dumps(SportEvents, default=vars)
 }
 
 
 @app.route('/')
+@login_required
 def home():
     return redirect(url_for('calendar'))
 
+
 @app.route('/calendar')
+@login_required
 def calendar():
+
+    user                = log_in(session['user']["_id" ], session['user']['password'])
+    session['user']     = user
+
     return render_template('pages/home.html', session=session)
 
-@app.route('/profile')
+
+@app.route('/profile', methods = ['GET', 'POST'])
+@login_required
 def profile():
+    
+    user                = log_in(session['user']['_id'], session['user']['password'])
+    session['user']     = user
+
     return render_template('pages/profile.html', session=session)
 
-@app.route('/login')
+
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
+
     form = LoginForm(request.form)
+    if request.method == 'POST':
+
+        user     = log_in(form.email.data, form.password.data)
+
+        print(user)
+
+        if not isinstance(user, str):
+            session['user']     = user
+            session['loggedIn'] = True
+            return redirect(url_for('calendar'))
+        
+        form.msg = user
+
     return render_template('forms/login.html', form=form)
 
 
-@app.route('/register')
+@app.route('/register', methods = ['GET', 'POST'])
 def register():
+
     form = RegisterForm(request.form)
+    if request.method == 'POST':
+
+        name        = form.name.data
+        email       = form.email.data
+        year        = form.year.data
+        number      = form.number.data
+        password    = form.password.data
+
+        sign_up(name, email, year, number, password)
+
+        form.msg = "Successfully registered as " + name
+        return redirect(url_for('login'))
+
     return render_template('forms/register.html', form=form)
 
 
@@ -83,8 +126,88 @@ def forgot():
     form = ForgotForm(request.form)
     return render_template('forms/forgot.html', form=form)
 
-# Error handlers.
 
+@app.route('/buy', methods = ['GET', 'POST'])
+@app.route('/buy/<eventID>', methods = ['GET', 'POST'])
+@login_required
+def buy(eventID = ""):
+
+    if not eventID:
+        return redirect(url_for('calendar'))
+
+    email = session['user']['_id']
+    date  = sport = location = ""
+
+    for event in session['events']:
+
+        if event.id == eventID:
+            date     = event.date
+            sport    = event.sport
+            location = event.loc
+            break
+
+    ticket = Ticket(email, eventID, date, sport, location, False)
+
+    if request.method=='POST':
+
+        add_ticket(email, ticket)
+        return redirect(url_for('profile'))
+
+    data = ticket.__dict__
+    return render_template('forms/buy.html', data=data)
+
+
+@app.route('/ticket/<ticketID>', methods = ['GET'])
+@login_required
+def ticket(ticketID = ""):
+
+    if not ticketID:
+        return redirect(url_for('profile'))
+    email   = session['user']['_id']
+    eventID = date  = sport = location = ""
+    # for ticket in session['user']['tickets']:
+
+    #     if ticket.tid == ticketID:
+    #         eventID  = ticket.eventid
+    #         date     = ticket.date
+    #         sport    = ticket.sport
+    #         location = ticket.location
+    #         break
+    # ticket = Ticket(email, eventID, date, sport, location, False)
+    data = ticket.__dict__
+    return render_template('forms/details.html', data=data)
+
+
+@app.route('/removeticket/<ticketID>', methods = ['POST'])
+@login_required
+def removeticket(ticketID = ""):
+
+    if not ticketID:
+        return redirect(url_for('calendar'))
+
+    email  = session['user']['_id']
+    ticket = Ticket("", "", "", "", "")
+    ticket.tid = ticketID
+    remove_ticket(email, ticket)
+
+    return redirect(url_for('profile'))
+
+
+@app.route('/checkin/<ticketID>', methods = ['POST'])
+@login_required
+def checkin(ticketID = ""):
+
+    if not ticketID:
+        return redirect(url_for('calendar'))
+
+    email  = session['user']['_id']
+    ticket = Ticket("", "", "", "", "")
+    ticket.tid = ticketID
+    update_check_in(email, ticket)
+
+    return redirect(url_for('profile'))
+
+# Error handlers.
 
 @app.errorhandler(500)
 def internal_error(error):

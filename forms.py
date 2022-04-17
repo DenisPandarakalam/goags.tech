@@ -12,8 +12,14 @@ class RegisterForm(Form):
     email = TextField(
         'Email', validators=[DataRequired(), Length(min=6, max=40)]
     )
+    year = TextField(
+        'Year', validators=[DataRequired(), Length(min=3, max=5)]
+    )
+    number = TextField(
+        'number', validators=[DataRequired(), Length(min=0, max=40)]
+    )
     password = PasswordField(
-        'Password', validators=[DataRequired(), Length(min=6, max=40)]
+        'password', validators=[DataRequired(), Length(min=0, max=40)]
     )
     confirm = PasswordField(
         'Repeat Password',
@@ -23,7 +29,7 @@ class RegisterForm(Form):
 
 
 class LoginForm(Form):
-    name = TextField('Username', [DataRequired()])
+    email = TextField('email', [DataRequired()])
     password = PasswordField('Password', [DataRequired()])
 
 

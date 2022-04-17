@@ -1,15 +1,33 @@
 {% extends 'layouts/main.html' %}
-{% block title %}{{ session.profile.name }}'s Profile{% endblock %}
+{% block title %}Profile{% endblock %}
 {% block content %}
-
 <div class="page-header">
-  <h1>{{ session.profile.name }}</h1>
+  <h1>{{ session.user.extras.name }}</h1>
 </div>
-<p class="lead">Tickets</p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tellus ligula, imperdiet id lobortis sit amet, scelerisque non sapien. Duis quis dui quis mauris dapibus fringilla. Pellentesque nec tellus ac diam volutpat malesuada.</p>
-<p class="lead">Update Information</p>
-<p>In quam arcu, interdum vel arcu viverra, vulputate convallis massa. Sed hendrerit velit a arcu euismod, sit amet consequat lacus imperdiet. Nullam quis dui sapien. Vestibulum placerat, justo non fringilla laoreet, dui ipsum posuere nisi, nec vestibulum eros leo ut sapien.</p>
-<p class="lead">Delete Account</p>
-<p>Integer elementum malesuada dolor in aliquet.</p>
 
+
+<p class="lead">Tickets</p>
+<ul class="list-group list-group-flush">
+  {% for ticket in session.user.tickets %}
+    <li class="list-group-item flex-fill" 
+    style="
+      {% if ticket.checked_in %}
+        background-color: #B3A369;
+        color: white
+      {% endif %}
+    ">
+      
+      {{ ticket.sport }} on {{ ticket.date }}
+
+      <form id="removeticket {{ ticket.tid }}" method="post" action="/removeticket/{{ ticket.tid }}"></form>
+        <a onclick="document.getElementById('removeticket {{ ticket.tid }}').submit();"><i class="fas fa-trash-alt text-danger">x</i></a>
+      </form>
+
+      <form id="checkin {{ ticket.tid }}" method="post" action="/checkin/{{ ticket.tid }}"></form>
+        <a onclick="document.getElementById('checkin {{ ticket.tid }}').submit();"><i>Check In</i></a>
+      </form>
+
+    </li>
+  {% endfor %}
+</ul>
 {% endblock %}

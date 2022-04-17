@@ -56,8 +56,6 @@
           <ul class="nav navbar-nav pull-right">
             <li {% if request.endpoint == 'calendar' %} class="active" {% endif %}><a href="{{ url_for('home') }}">Calendar</a></li>
             <li {% if request.endpoint == 'profile' %} class="active" {% endif %}><a href="{{ url_for('profile') }}">Profile</a></li>
-            <li><a href="{{ url_for('register') }}">Signup</a></li>
-            <li><a href="{{ url_for('login') }}">Login</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

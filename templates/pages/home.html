@@ -4,7 +4,7 @@
 
 
 <div class="page-header">
-  <h1>Welcome back, {{ session.profile.name }}</h1>
+  <h1>Welcome back, {{ session.user.extras.name }}</h1>
 </div>
 
 <!-- CALENDAR MAIN -->
@@ -16,27 +16,35 @@
   
   // Looping through event JSON array and creating new array for calendar
   for (let event of eventsJSON) {
+    
     var newEvent = {
-      id: (event.sport + event.date + event.time).replace(/\s/g, ''),
+      id: event.id,
       title: event.sport,
-      start: event.date
+      start: event.date,
+      description: event.loc
     }
+
     myEvents.push(newEvent)
   }
-
-  console.log(myEvents)
 
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
 
-      events: myEvents
+      initialView: 'dayGridMonth',
+      events: myEvents,
+      eventClick: function(info) {
+        event = info.event
+        console.log(event.id)
+        if (event.id) {
+          location.href = "/buy/"+event.id;
+          return false;
+        }
+      }
     });
     calendar.render();
   });
 </script>
 <div id='calendar'></div>
 <!-- END CALENDAR MAIN -->
-
 {% endblock %} 

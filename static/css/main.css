@@ -59,3 +59,7 @@ a {
 #footer * {
   color: white;
 }
+
+body.modal-open {
+  overflow: hidden;
+}
