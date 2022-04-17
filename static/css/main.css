@@ -1,0 +1,61 @@
+
+/**
+ * @file
+ * Main stylesheet file.
+ */
+
+/*****************************************************************************
+ * Main elements
+ ****************************************************************************/
+html {
+  overflow-y: scroll;
+}
+a {
+  cursor: pointer;
+}
+::selection {
+  background: #555;
+  color: #FFF;
+}
+::-moz-selection {
+  background: #555;
+  color: #FFF;
+}
+::-webkit-selection {
+  background: #555;
+  color: #FFF;
+}
+/* Main elements end */
+
+
+/*****************************************************************************
+ * Various other styles
+ ****************************************************************************/
+
+/* Various other styles end */
+
+/* NAVBAR */
+.navbar {
+  background-color: #4D6887;
+}
+
+.navbar a {
+  
+  color: white;
+  font-weight: bold;
+  outline: none;
+}
+
+.navbar .navbar-nav a:hover {
+
+  color: black;
+}
+
+.navbar .active a {
+  background-color: white;
+  color: black;
+}
+
+#footer * {
+  color: white;
+}
