@@ -2,20 +2,21 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-from ast import Return
-import email
-from tabnanny import check
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from functools import wraps
+from ast        import Return
+from tabnanny   import check
+from flask      import Flask, render_template, request, redirect, url_for, session, flash
+from functools  import wraps
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
-from logging import Formatter, FileHandler
-from forms import *
+from logging    import Formatter, FileHandler
+from forms      import *
 import os
 
 import json
-from sportevents import SportEvents
-from db_functions import *
+from sportevents    import SportEvents
+from db_functions   import *
+from location       import *
+from send_sms       import *
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -67,6 +68,7 @@ def calendar():
 
     user                = log_in(session['user']["_id" ], session['user']['password'])
     session['user']     = user
+    session['userJSON'] = json.dumps(user, default=vars)
 
     return render_template('pages/home.html', session=session)
 
@@ -161,20 +163,17 @@ def buy(eventID = ""):
 @login_required
 def ticket(ticketID = ""):
 
+    data = ticketID
     if not ticketID:
         return redirect(url_for('profile'))
-    email   = session['user']['_id']
-    eventID = date  = sport = location = ""
-    # for ticket in session['user']['tickets']:
 
-    #     if ticket.tid == ticketID:
-    #         eventID  = ticket.eventid
-    #         date     = ticket.date
-    #         sport    = ticket.sport
-    #         location = ticket.location
-    #         break
-    # ticket = Ticket(email, eventID, date, sport, location, False)
-    data = ticket.__dict__
+    for ticket in session['user']['tickets']:
+        if ticket['tid'] == ticketID:
+            data = ticket
+            break
+
+    if data == ticketID:
+        return redirect(url_for('calendar'))
     return render_template('forms/details.html', data=data)
 
 
@@ -192,8 +191,23 @@ def removeticket(ticketID = ""):
 
     return redirect(url_for('profile'))
 
+@app.route('/locationcheck', methods = ['GET', 'POST'])
+@app.route('/locationcheck/<ticketID>', methods = ['GET', 'POST'])
+@app.route('/locationcheck/<ticketID>/<ans>', methods = ['GET', 'POST'])
+@login_required
+def locationcheck(ticketID = "", ans = ""):
 
-@app.route('/checkin/<ticketID>', methods = ['POST'])
+    if not ticketID:
+        return redirect(url_for('calendar'))
+
+    if request.method == 'POST' and ans:
+        distance = location_check_prompt(True, "Davis, CA", "kanye@ucdavis.edu", ticketID)
+        flash("You are "+str(int(distance))+" miles away from the location.")
+        return redirect(url_for('checkin', ticketID=ticketID))
+    return render_template('forms/locationcheck.html', ticketID=ticketID)
+
+
+@app.route('/checkin/<ticketID>', methods = ['GET', 'POST'])
 @login_required
 def checkin(ticketID = ""):
 
@@ -204,6 +218,8 @@ def checkin(ticketID = ""):
     ticket = Ticket("", "", "", "", "")
     ticket.tid = ticketID
     update_check_in(email, ticket)
+
+    ticket_notification(email, ticketID, '+13233361526')
 
     return redirect(url_for('profile'))
 

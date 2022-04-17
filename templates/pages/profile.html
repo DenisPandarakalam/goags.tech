@@ -13,18 +13,27 @@
     style="
       {% if ticket.checked_in %}
         background-color: #B3A369;
-        color: white
+        color: white;
+        font-weight: bold
       {% endif %}
     ">
       
-      {{ ticket.sport }} on {{ ticket.date }}
+      <a href="./ticket/{{ ticket.tid }}"
+      style="
+        {% if ticket.checked_in %}
+          color: white;
+        {% endif %}
+          color: black
+      ">
+        {{ ticket.sport }} on {{ ticket.date }}
+      </a>
 
       <form id="removeticket {{ ticket.tid }}" method="post" action="/removeticket/{{ ticket.tid }}"></form>
         <a onclick="document.getElementById('removeticket {{ ticket.tid }}').submit();"><i class="fas fa-trash-alt text-danger">x</i></a>
       </form>
 
-      <form id="checkin {{ ticket.tid }}" method="post" action="/checkin/{{ ticket.tid }}"></form>
-        <a onclick="document.getElementById('checkin {{ ticket.tid }}').submit();"><i>Check In</i></a>
+      <form id="locationcheck {{ ticket.tid }}" method="get" action="/locationcheck/{{ ticket.tid }}"></form>
+        <a onclick="document.getElementById('locationcheck {{ ticket.tid }}').submit();"><i>Check In</i></a>
       </form>
 
     </li>

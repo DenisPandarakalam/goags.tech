@@ -20,7 +20,7 @@
 <!-- /styles -->
 
 <!-- favicons -->
-<link rel="shortcut icon" href="/static/ico/favicon.png">
+<link rel="shortcut icon" href="https://ucdavisaggies.com/favicon.ico">
 <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
@@ -40,21 +40,19 @@
   <div id="wrap">
 
     <!-- Fixed navbar -->
-    <div class="navbar navbar-dark navbar-fixed-top" style="background-color: #002855; border: none;">
+    <div class="navbar navbar-dark navbar-fixed-top shadow-lg p-3 mb-5 bg-white rounded" style="background-color: #002855; border: none;">
       <div class="container">
-        <div class="navbar-header">
+        <div class="navbar-header shadow-lg p-3 mb-5 bg-white rounded">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">#GOAGS</a>
+          <a class="navbar-brand shadow-lg p-3 mb-5 bg-white rounded shadow-lg p-3 mb-5 bg-white rounded" href="/">#GOAGS</a>
         </div>
         <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-          </ul>
           <ul class="nav navbar-nav pull-right">
-            <li {% if request.endpoint == 'calendar' %} class="active" {% endif %}><a href="{{ url_for('home') }}">Calendar</a></li>
+            <li {% if request.endpoint == 'calendar' %} class="active " {% endif %}><a href="{{ url_for('home') }}">Calendar</a></li>
             <li {% if request.endpoint == 'profile' %} class="active" {% endif %}><a href="{{ url_for('profile') }}">Profile</a></li>
           </ul>
         </div><!--/.nav-collapse -->

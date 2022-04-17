@@ -1,8 +1,7 @@
 {% extends 'layouts/form.html' %}
 {% block title %}Confirm{% endblock %}
 {% block content %}
-  <form method="post" class="form">
-      {{ data }}
+  <form method="post" class="form" action="{{ url_for('profile') }}">
     <h3 class="form-heading">Ticket Details <a href="{{ url_for('home') }}" title="Back to homepage"><i class="fa fa-home pull-right"></i></a></h3>
     <strong> Email </strong> <p> {{ data.email }} </p>
     <strong> Sport </strong> <p> {{ data.sport }} </p>
