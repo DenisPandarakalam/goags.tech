@@ -2,33 +2,41 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
+
+<div class="page-header">
+  <h1>Welcome back, {{ session.profile.name }}</h1>
+</div>
+
 <!-- CALENDAR MAIN -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.js"></script>
 <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" />
-
 <script>
+  var eventsJSON = JSON.parse({{ session.eventsJSON | tojson }})
+  var myEvents     = []
+  
+  // Looping through event JSON array and creating new array for calendar
+  for (let event of eventsJSON) {
+    var newEvent = {
+      id: (event.sport + event.date + event.time).replace(/\s/g, ''),
+      title: event.sport,
+      start: event.date
+    }
+    myEvents.push(newEvent)
+  }
+
+  console.log(myEvents)
 
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
+
+      events: myEvents
     });
     calendar.render();
   });
-
 </script>
-
-<style>
-#calendar {
-
-}
-</style>
-
-<div class="page-header">
-  <h1>Welcome Back, {{ session.profile.name }} </h1>
-</div>
-<!-- <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added within <code>#wrap</code> with <code>padding-top: 60px;</code> on the <code>.container</code>.</p> -->
-
 <div id='calendar'></div>
+<!-- END CALENDAR MAIN -->
 
 {% endblock %} 

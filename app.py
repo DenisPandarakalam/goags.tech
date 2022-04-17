@@ -10,6 +10,9 @@ from logging import Formatter, FileHandler
 from forms import *
 import os
 
+import json
+from sportevents import SportEvents
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -45,7 +48,9 @@ session = {
     "profile": {
         "name": "Denis"
     },
-    "loggedIn": "True"
+    "loggedIn": "True",
+    "events": SportEvents,
+    "eventsJSON": json.dumps(SportEvents, default=vars)
 }
 
 
@@ -53,14 +58,13 @@ session = {
 def home():
     return redirect(url_for('calendar'))
 
-
 @app.route('/calendar')
 def calendar():
-    return render_template('pages/placeholder.home.html', session=session)
+    return render_template('pages/home.html', session=session)
 
 @app.route('/profile')
 def profile():
-    return render_template('pages/placeholder.profile.html', session=session)
+    return render_template('pages/profile.html', session=session)
 
 @app.route('/login')
 def login():
